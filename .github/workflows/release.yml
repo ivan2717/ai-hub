@@ -59,11 +59,11 @@ jobs:
       - name: Sync node version and setup cache
         uses: actions/setup-node@v3
         with:
-          node-version: '18' # 请根据你的项目选择 Node 版本
-          cache: 'npm' # or 'yarn' or 'pnpm'
+          node-version: '22' # 请根据你的项目选择 Node 版本
+          cache: 'pnpm' # or 'yarn' or 'pnpm'
 
       - name: Install frontend dependencies
-        run: npm install # or 'yarn install' or 'pnpm install'
+        run: pnpm install # or 'yarn install' or 'pnpm install'
 
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
