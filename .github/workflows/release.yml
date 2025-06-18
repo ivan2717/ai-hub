@@ -2,7 +2,6 @@
 
 name: Release
 
-# 1. 修正触发器：只在推送 vX.Y.Z 格式的标签时运行
 on:
   push:
     tags:
@@ -11,12 +10,10 @@ on:
 jobs:
   create-release:
     runs-on: ubuntu-latest
-    # 2. 为 Job 添加写权限
     permissions:
       contents: write
     outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
-      release_id: ${{ steps.create_release.outputs.id }} # 传递 release_id
+      release_id: ${{ steps.create_release.outputs.id }}
     steps:
       - name: Create Release
         id: create_release
@@ -31,7 +28,6 @@ jobs:
 
   build-tauri:
     needs: create-release
-    # 2. 为 Job 添加写权限
     permissions:
       contents: write
     strategy:
@@ -58,6 +54,11 @@ jobs:
         with:
           workspaces: './src-tauri -> target'
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
       - name: Sync node version and setup cache
         uses: actions/setup-node@v3
         with:
@@ -72,4 +73,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          releaseId: ${{ needs.create-release.outputs.release_id }} # 使用传递过来的 release_id
+          releaseId: ${{ needs.create-release.outputs.release_id }}
