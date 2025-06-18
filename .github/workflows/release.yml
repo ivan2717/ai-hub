@@ -62,10 +62,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '22'
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: Install frontend dependencies
-        run: pnpm install
+        run: npm install
 
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
