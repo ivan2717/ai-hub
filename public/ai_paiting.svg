@@ -1,0 +1,121 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景圆形 -->
+  <circle cx="100" cy="100" r="95" fill="url(#bgGradient)" stroke="url(#borderGradient)" stroke-width="3"/>
+  
+  <!-- 渐变定义 -->
+  <defs>
+    <!-- 背景渐变 -->
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- 边框渐变 -->
+    <linearGradient id="borderGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f093fb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f5576c;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- 画笔渐变 -->
+    <linearGradient id="brushGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffecd2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fcb69f;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- 神经网络渐变 -->
+    <linearGradient id="neuralGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a8edea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fed6e3;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- 发光效果 -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- AI神经网络节点 -->
+  <g fill="url(#neuralGradient)" opacity="0.8">
+    <!-- 第一层节点 -->
+    <circle cx="60" cy="70" r="4" filter="url(#glow)"/>
+    <circle cx="60" cy="100" r="4" filter="url(#glow)"/>
+    <circle cx="60" cy="130" r="4" filter="url(#glow)"/>
+    
+    <!-- 第二层节点 -->
+    <circle cx="100" cy="60" r="4" filter="url(#glow)"/>
+    <circle cx="100" cy="85" r="4" filter="url(#glow)"/>
+    <circle cx="100" cy="115" r="4" filter="url(#glow)"/>
+    <circle cx="100" cy="140" r="4" filter="url(#glow)"/>
+    
+    <!-- 第三层节点 -->
+    <circle cx="140" cy="70" r="4" filter="url(#glow)"/>
+    <circle cx="140" cy="100" r="4" filter="url(#glow)"/>
+    <circle cx="140" cy="130" r="4" filter="url(#glow)"/>
+  </g>
+  
+  <!-- 神经网络连接线 -->
+  <g stroke="url(#neuralGradient)" stroke-width="1.5" opacity="0.6" fill="none">
+    <!-- 从第一层到第二层 -->
+    <line x1="60" y1="70" x2="100" y2="60"/>
+    <line x1="60" y1="70" x2="100" y2="85"/>
+    <line x1="60" y1="100" x2="100" y2="85"/>
+    <line x1="60" y1="100" x2="100" y2="115"/>
+    <line x1="60" y1="130" x2="100" y2="115"/>
+    <line x1="60" y1="130" x2="100" y2="140"/>
+    
+    <!-- 从第二层到第三层 -->
+    <line x1="100" y1="60" x2="140" y2="70"/>
+    <line x1="100" y1="85" x2="140" y2="70"/>
+    <line x1="100" y1="85" x2="140" y2="100"/>
+    <line x1="100" y1="115" x2="140" y2="100"/>
+    <line x1="100" y1="115" x2="140" y2="130"/>
+    <line x1="100" y1="140" x2="140" y2="130"/>
+  </g>
+  
+  <!-- 艺术画笔 -->
+  <g transform="translate(70, 45) rotate(35)">
+    <!-- 画笔杆 -->
+    <rect x="0" y="0" width="50" height="6" fill="url(#brushGradient)" rx="3"/>
+    <!-- 画笔头 -->
+    <polygon points="50,0 60,3 50,6" fill="#444" opacity="0.8"/>
+    <!-- 画笔尖 -->
+    <polygon points="60,3 65,2 65,4" fill="#222"/>
+  </g>
+  
+  <!-- 彩色像素点/艺术元素 -->
+  <g opacity="0.9">
+    <!-- 彩色方块代表像素艺术 -->
+    <rect x="110" y="45" width="8" height="8" fill="#ff6b6b" rx="1"/>
+    <rect x="120" y="45" width="8" height="8" fill="#4ecdc4" rx="1"/>
+    <rect x="130" y="45" width="8" height="8" fill="#45b7d1" rx="1"/>
+    <rect x="140" y="45" width="8" height="8" fill="#96ceb4" rx="1"/>
+    
+    <rect x="115" y="55" width="8" height="8" fill="#ffeaa7" rx="1"/>
+    <rect x="125" y="55" width="8" height="8" fill="#fd79a8" rx="1"/>
+    <rect x="135" y="55" width="8" height="8" fill="#e17055" rx="1"/>
+  </g>
+  
+  <!-- 创意火花 -->
+  <g fill="#fff" opacity="0.8">
+    <circle cx="85" cy="40" r="2" filter="url(#glow)"/>
+    <circle cx="95" cy="35" r="1.5" filter="url(#glow)"/>
+    <circle cx="105" cy="30" r="1" filter="url(#glow)"/>
+    <circle cx="150" cy="40" r="2" filter="url(#glow)"/>
+    <circle cx="160" cy="35" r="1.5" filter="url(#glow)"/>
+  </g>
+  
+  <!-- 中心AI标识 -->
+  <g transform="translate(100, 100)">
+    <circle cx="0" cy="0" r="20" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+    <text x="0" y="6" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#fff">AI</text>
+  </g>
+  
+  <!-- 装饰性光环 -->
+  <circle cx="100" cy="100" r="70" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1" stroke-dasharray="5,5">
+    <animateTransform attributeName="transform" type="rotate" values="0 100 100;360 100 100" dur="20s" repeatCount="indefinite"/>
+  </circle>
+</svg>
