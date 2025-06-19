@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as HomeIndexRouteImport } from './routes/home/index'
+import { Route as ExplorerIndexRouteImport } from './routes/explorer/index'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
 
 const IndexRoute = IndexRouteImport.update({
@@ -23,6 +24,11 @@ const HomeIndexRoute = HomeIndexRouteImport.update({
   path: '/home/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ExplorerIndexRoute = ExplorerIndexRouteImport.update({
+  id: '/explorer/',
+  path: '/explorer/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutIndexRoute = AboutIndexRouteImport.update({
   id: '/about/',
   path: '/about/',
@@ -32,30 +38,34 @@ const AboutIndexRoute = AboutIndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutIndexRoute
+  '/explorer': typeof ExplorerIndexRoute
   '/home': typeof HomeIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutIndexRoute
+  '/explorer': typeof ExplorerIndexRoute
   '/home': typeof HomeIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about/': typeof AboutIndexRoute
+  '/explorer/': typeof ExplorerIndexRoute
   '/home/': typeof HomeIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/home'
+  fullPaths: '/' | '/about' | '/explorer' | '/home'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/home'
-  id: '__root__' | '/' | '/about/' | '/home/'
+  to: '/' | '/about' | '/explorer' | '/home'
+  id: '__root__' | '/' | '/about/' | '/explorer/' | '/home/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutIndexRoute: typeof AboutIndexRoute
+  ExplorerIndexRoute: typeof ExplorerIndexRoute
   HomeIndexRoute: typeof HomeIndexRoute
 }
 
@@ -75,6 +85,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/explorer/': {
+      id: '/explorer/'
+      path: '/explorer'
+      fullPath: '/explorer'
+      preLoaderRoute: typeof ExplorerIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about/': {
       id: '/about/'
       path: '/about'
@@ -88,6 +105,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutIndexRoute: AboutIndexRoute,
+  ExplorerIndexRoute: ExplorerIndexRoute,
   HomeIndexRoute: HomeIndexRoute,
 }
 export const routeTree = rootRouteImport

@@ -17,7 +17,7 @@ pub fn run() {
             // 命令窗口进入全屏模式
             // 这将在保持无装饰和透明设置的同时，使窗口全屏
             window
-                .set_fullscreen(true)
+                .set_fullscreen(false)
                 .expect("Failed to set window to fullscreen");
 
             Ok(())
