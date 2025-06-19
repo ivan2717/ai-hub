@@ -1,6 +1,10 @@
-import "./App.css";
+import { createFileRoute } from '@tanstack/react-router';
 
-function App() {
+export const Route = createFileRoute('/home/')({
+  component: Home,
+});
+
+function Home() {
   return (
     <div style={{ width: "100vw", height: "100vh", margin: 0, padding: 0, overflow: 'hidden' }}>
       <iframe
@@ -11,5 +15,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
