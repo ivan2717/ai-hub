@@ -1,3 +1,5 @@
+# .github/workflows/release.yml
+
 name: Release
 
 on:
@@ -13,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       release_id: ${{ steps.create_release.outputs.id }}
-      upload_url: ${{ steps.create_release.outputs.upload_url }} # 虽然新方法不用它，但保留无害
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
       - name: Create Release
         id: create_release
@@ -148,20 +150,24 @@ jobs:
           TAURI_KEY_PATH: ${{ runner.temp }}/release.keystore
           TAURI_KEY_PASSWORD: ${{ secrets.ANDROID_SIGNING_KEY_PASSWORD }}
 
-      - name: List build artifacts (for debugging)
+      - name: Upload Android APK
         if: matrix.os == 'linux'
-        run: ls -R src-tauri/gen/android/app/build/outputs/
-
-      # =====================================================
-      # UPLOAD STEP (CORRECTED with GH CLI)
-      # =====================================================
-      - name: Upload Android Artifacts to Release
-        if: matrix.os == 'linux'
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # 使用 gh-cli 上传所有匹配的 APK 和 AAB 文件
-          # 它会自动处理通配符并上传所有找到的文件
-          gh release upload ${{ github.ref_name }} \
-            src-tauri/gen/android/app/build/outputs/apk/release/*.apk \
-            src-tauri/gen/android/app/build/outputs/bundle/release/*.aab
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: src-tauri/gen/android/app/build/outputs/apk/release/app-universal-release-unsigned.apk
+          asset_name: app-${{ github.ref_name }}.apk
+          asset_content_type: application/vnd.android.package-archive
+
+      - name: Upload Android AAB
+        if: matrix.os == 'linux'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: src-tauri/gen/android/app/build/outputs/bundle/universalRelease/app-universal-release.aab
+          asset_name: app-${{ github.ref_name }}.aab
+          asset_content_type: application/octet-stream
