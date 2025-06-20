@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       release_id: ${{ steps.create_release.outputs.id }}
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
       - name: Create Release
         id: create_release
@@ -126,12 +127,39 @@ jobs:
       # =====================================================
       # BUILD STEP
       # =====================================================
-      - name: Build the app
+      - name: Build desktop app
+        if: matrix.os == 'macos' || matrix.os == 'windows'
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAURI_KEY_PATH: ${{ matrix.os == 'linux' && format('{0}/release.keystore', runner.temp) || '' }}
-          TAURI_KEY_PASSWORD: ${{ secrets.ANDROID_SIGNING_KEY_PASSWORD }}
         with:
           releaseId: ${{ needs.create-release.outputs.release_id }}
-          args: ${{ matrix.os == 'linux' && '--target aarch64-linux-android' || '' }}
+
+      - name: Build Android app
+        if: matrix.os == 'linux'
+        run: pnpm tauri android build
+        env:
+          TAURI_KEY_PATH: ${{ runner.temp }}/release.keystore
+          TAURI_KEY_PASSWORD: ${{ secrets.ANDROID_SIGNING_KEY_PASSWORD }}
+
+      - name: Upload Android APK
+        if: matrix.os == 'linux'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: src-tauri/gen/android/app/build/outputs/apk/release/app-release.apk
+          asset_name: app-${{ github.ref_name }}.apk
+          asset_content_type: application/vnd.android.package-archive
+
+      - name: Upload Android AAB
+        if: matrix.os == 'linux'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: src-tauri/gen/android/app/build/outputs/bundle/release/app-release.aab
+          asset_name: app-${{ github.ref_name }}.aab
+          asset_content_type: application/octet-stream
