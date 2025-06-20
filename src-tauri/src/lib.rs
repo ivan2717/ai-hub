@@ -1,6 +1,19 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 use tauri::{Manager, WindowEvent};
 
+
+#[cfg(not(target_os = "android"))]
+use rfd::FileDialog;
+
+// 只在非 Android 平台定义这个 command
+#[cfg(not(target_os = "android"))]
+#[tauri::command]
+fn open_file_dialog() {
+    if let Some(path) = FileDialog::new().pick_file() {
+        println!("Selected file: {}", path.display());
+    }
+}
+
 #[tauri::command]
 fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
@@ -8,7 +21,16 @@ fn greet(name: &str) -> String {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
+
+    let mut builder = tauri::Builder::default();
+
+    // 只在非 Android 平台注册这个 command
+    #[cfg(not(target_os = "android"))]
+    {
+       builder = builder.invoke_handler(tauri::generate_handler![open_file_dialog]);
+    }
+
+    builder
         // 使用 setup 钩子，在窗口创建后执行代码
         .setup(|app| {
             // 通过 label 获取主窗口

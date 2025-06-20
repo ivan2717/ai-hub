@@ -23,3 +23,9 @@ tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 
+# 把桌面专属依赖放到这里
+[target.'cfg(not(target_os = "android"))'.dependencies]
+rfd = "0.14" # <--- 现在它只会在非 Android 平台被编译
+# 如果还有其他桌面依赖，比如 tray-icon，也放进来
+# tray-icon = "0.8"
+
