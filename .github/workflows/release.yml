@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       release_id: ${{ steps.create_release.outputs.id }}
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      upload_url: ${{ steps.create_release.outputs.upload_url }} # 虽然新方法不用它，但保留无害
     steps:
       - name: Create Release
         id: create_release
@@ -148,31 +148,20 @@ jobs:
           TAURI_KEY_PATH: ${{ runner.temp }}/release.keystore
           TAURI_KEY_PASSWORD: ${{ secrets.ANDROID_SIGNING_KEY_PASSWORD }}
 
-      # =====================================================
-      # UPLOAD STEP (CORRECTED)
-      # =====================================================
       - name: List build artifacts (for debugging)
         if: matrix.os == 'linux'
         run: ls -R src-tauri/gen/android/app/build/outputs/
 
-      - name: Upload Android APKs
+      # =====================================================
+      # UPLOAD STEP (CORRECTED with GH CLI)
+      # =====================================================
+      - name: Upload Android Artifacts to Release
         if: matrix.os == 'linux'
-        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          # 使用通配符 (*) 匹配所有生成的 release APK 文件
-          asset_path: src-tauri/gen/android/app/build/outputs/apk/release/*.apk
-          asset_content_type: application/vnd.android.package-archive
-
-      - name: Upload Android AAB
-        if: matrix.os == 'linux'
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          # 使用通配符 (*) 匹配生成的 AAB 文件
-          asset_path: src-tauri/gen/android/app/build/outputs/bundle/release/*.aab
-          asset_content_type: application/octet-stream
+        run: |
+          # 使用 gh-cli 上传所有匹配的 APK 和 AAB 文件
+          # 它会自动处理通配符并上传所有找到的文件
+          gh release upload ${{ github.ref_name }} \
+            src-tauri/gen/android/app/build/outputs/apk/release/*.apk \
+            src-tauri/gen/android/app/build/outputs/bundle/release/*.aab
