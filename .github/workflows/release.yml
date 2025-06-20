@@ -143,13 +143,11 @@ jobs:
         if: matrix.os == 'linux'
         run: ls -R src-tauri/gen/android/app/build/outputs/
 
-      - name: Upload Android Artifacts to Release
+      - name: Upload Android App Bundle (AAB) to Release
         if: matrix.os == 'linux'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # 尝试上传 APKs。如果找不到文件，则打印一条消息而不是让整个 job 失败。
-          gh release upload ${{ github.ref_name }} src-tauri/gen/android/app/build/outputs/apk/release/*.apk || echo "No APKs found to upload, skipping."
-          
-          # 上传 AAB 文件。我们假设这个文件总是存在的。
-          gh release upload ${{ github.ref_name }} src-tauri/gen/android/app/build/outputs/bundle/release/*.aab
+          # AAB 文件是主要的、已签名的发布产物，我们只需要上传它。
+          # 这里的路径已经根据 `ls -R` 的输出结果修正。
+          gh release upload ${{ github.ref_name }} src-tauri/gen/android/app/build/outputs/bundle/universalRelease/*.aab
