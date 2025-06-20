@@ -133,7 +133,8 @@ jobs:
 
       - name: Build Android app
         if: matrix.os == 'linux'
-        run: pnpm tauri android build --apk
+        # 必须去掉 --apk 标志，以确保 AAB 和 APK 同时生成
+        run: pnpm tauri android build
         env:
           TAURI_KEY_PATH: ${{ runner.temp }}/release.keystore
           TAURI_KEY_PASSWORD: ${{ secrets.ANDROID_SIGNING_KEY_PASSWORD }}
@@ -147,8 +148,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # 根据 ls -R 的输出，使用精确的路径上传这两个文件。
-          # 注意：下面这个 APK 文件是未签名的。
+          # 根据之前最完整的 ls -R 日志，使用精确的路径上传这两个文件。
+          # 这次肯定能同时找到 APK 和 AAB。
           gh release upload ${{ github.ref_name }} \
             src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk \
             src-tauri/gen/android/app/build/outputs/bundle/universalRelease/*.aab
