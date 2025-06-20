@@ -70,23 +70,23 @@ jobs:
         if: matrix.os == 'linux'
         run: echo "NDK_HOME=$ANDROID_HOME/ndk/25.2.9519653" >> $GITHUB_ENV
 
+      # ====================================================================
+      # 新增：检查 Secret 是否为空，这是最关键的调试步骤
+      # ====================================================================
+      - name: Check if Secret is empty
+        if: matrix.os == 'linux'
+        run: |
+          SECRET_LENGTH=$(echo -n "${{ secrets.ANDROID_SIGNING_KEY }}" | wc -c)
+          echo "Length of the ANDROID_SIGNING_KEY secret is: $SECRET_LENGTH"
+          if [ "$SECRET_LENGTH" -lt 100 ]; then
+            echo "::error::The ANDROID_SIGNING_KEY secret is either empty or too short. Please re-create it in your repository's settings."
+            exit 1
+          fi
+
       - name: Decode and place Android signing key
         if: matrix.os == 'linux'
         run: |
           echo "${{ secrets.ANDROID_SIGNING_KEY }}" | base64 --decode > ${{ runner.temp }}/release.keystore
-
-      # ====================================================================
-      # 新增的调试步骤
-      # 这个步骤会检查从 Secret 解码后的 keystore 文件类型。
-      # 在工作流日志中查看此步骤的输出。
-      # 正确的输出应该包含 "Keystore type: JKS"
-      # ====================================================================
-      - name: Verify Keystore in Runner
-        if: matrix.os == 'linux'
-        run: |
-          echo "Verifying the keystore file format inside the runner..."
-          keytool -list -v -keystore ${{ runner.temp }}/release.keystore -storepass "${{ secrets.TAURI_KEY_PASSWORD }}"
-      # ====================================================================
 
       - name: Rust setup
         uses: dtolnay/rust-toolchain@stable
