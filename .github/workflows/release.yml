@@ -35,10 +35,10 @@ jobs:
       matrix:
         # 为 macOS, Windows 和 Android 打包
         platform: [macos-latest, windows-latest, ubuntu-latest]
-        # 在矩阵中为 Android 构建定义一个特殊标识
+        # 在矩阵中为每个平台定义一个特殊标识，方便条件判断
         include:
           - platform: ubuntu-latest
-            os: linux # 自定义一个标识，方便后面判断
+            os: linux # 用于 Android 构建
           - platform: macos-latest
             os: macos
           - platform: windows-latest
@@ -49,13 +49,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # --- Android 特定的设置步骤 (全新、可靠的方式) ---
+      # =====================================================
+      # ANDROID-SPECIFIC SETUP (runs only on ubuntu-latest)
+      # =====================================================
       - name: Set up Java
-        if: matrix.os == 'linux' # 只在 Android 构建时运行
+        if: matrix.os == 'linux'
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '17' # Android 开发常用的 JDK 版本
+          java-version: '17'
 
       - name: Setup Android SDK
         if: matrix.os == 'linux'
@@ -64,13 +66,12 @@ jobs:
 
       - name: Install NDK and other components with sdkmanager
         if: matrix.os == 'linux'
-        # 注意：这里不再需要 sudo，因为 setup-android action 已经配置好了权限
+        # 注意：这里不再需要 sudo
         run: |
           echo "y" | sdkmanager "ndk;25.2.9519653" "build-tools;34.0.0" "platforms;android-34"
       
       - name: Set NDK_HOME environment variable
         if: matrix.os == 'linux'
-        # setup-android 会设置 ANDROID_HOME, 我们需要在此基础上设置 NDK_HOME
         run: echo "NDK_HOME=$ANDROID_HOME/ndk/25.2.9519653" >> $GITHUB_ENV
 
       - name: Decode and place Android signing key
@@ -82,7 +83,9 @@ jobs:
           TAURI_KEY_PATH: ${{ runner.temp }}/release.keystore
           TAURI_KEY_PASSWORD: ${{ secrets.ANDROID_SIGNING_KEY_PASSWORD }}
 
-      # --- 通用的 Rust 和 Node 设置步骤 (保持不变) ---
+      # =====================================================
+      # COMMON SETUP for Rust, Node, and Frontend
+      # =====================================================
       - name: Rust setup
         uses: dtolnay/rust-toolchain@stable
       
@@ -109,7 +112,9 @@ jobs:
       - name: Install frontend dependencies
         run: pnpm install
 
-      # --- 构建步骤 (保持不变) ---
+      # =====================================================
+      # BUILD STEP
+      # =====================================================
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
         env:
@@ -119,93 +124,3 @@ jobs:
           TAURI_KEY_PASSWORD: ${{ env.TAURI_KEY_PASSWORD }}
         with:
           releaseId: ${{ needs.create-release.outputs.release_id }}
-    needs: create-release
-    permissions:
-      contents: write
-    strategy:
-      fail-fast: false
-      matrix:
-        # 为 macOS, Windows 和 Android 打包
-        platform: [macos-latest, windows-latest, ubuntu-latest]
-        # 在矩阵中为 Android 构建定义一个特殊标识
-        include:
-          - platform: ubuntu-latest
-            os: linux # 自定义一个标识，方便后面判断
-          - platform: macos-latest
-            os: macos
-          - platform: windows-latest
-            os: windows
-
-    runs-on: ${{ matrix.platform }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      # --- Android 特定的设置步骤 ---
-      - name: Set up Java and Android SDK
-        if: matrix.os == 'linux' # 只在 Android 构建时运行
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '17' # Android 开发常用的 JDK 版本
-      
-      - name: Install Android NDK
-        if: matrix.os == 'linux'
-        run: |
-          echo "y" | sudo apt-get update
-          echo "y" | sudo apt-get install -y android-sdk
-          echo "y" | sudo sdkmanager "ndk;25.2.9519653" "build-tools;34.0.0" "platforms;android-34"
-          echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
-          echo "NDK_HOME=$ANDROID_HOME/ndk/25.2.9519653" >> $GITHUB_ENV
-
-      - name: Decode and place Android signing key
-        if: matrix.os == 'linux'
-        # 从 GitHub Secrets 中解码 Keystore 文件
-        run: |
-          echo "${{ secrets.ANDROID_SIGNING_KEY }}" | base64 --decode > ${{ runner.temp }}/release.keystore
-        env:
-          # TAURI_KEY_PATH 和 TAURI_KEY_PASSWORD 是 tauri-action 会自动使用的环境变量
-          TAURI_KEY_PATH: ${{ runner.temp }}/release.keystore
-          TAURI_KEY_PASSWORD: ${{ secrets.ANDROID_SIGNING_KEY_PASSWORD }}
-
-      # --- 通用的 Rust 和 Node 设置步骤 ---
-      - name: Rust setup
-        uses: dtolnay/rust-toolchain@stable
-      
-      # 为 Android 交叉编译添加 Rust target
-      - name: Install Rust target for Android
-        if: matrix.os == 'linux'
-        run: rustup target add aarch64-linux-android armv7-linux-androideabi
-
-      - name: Rust cache
-        uses: swatinem/rust-cache@v2
-        with:
-          workspaces: './src-tauri -> target'
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 8
-
-      - name: Sync node version and setup cache
-        uses: actions/setup-node@v3
-        with:
-          node-version: '22'
-          cache: 'pnpm'
-
-      - name: Install frontend dependencies
-        run: pnpm install
-
-      # --- 构建步骤 ---
-      - name: Build the app
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # 签名密钥的环境变量会自动被 tauri-action 使用
-          TAURI_KEY_PATH: ${{ env.TAURI_KEY_PATH }}
-          TAURI_KEY_PASSWORD: ${{ env.TAURI_KEY_PASSWORD }}
-        with:
-          releaseId: ${{ needs.create-release.outputs.release_id }}
-          # Android 构建默认生成 APK 和 AAB
-          # 如果只想生成一种，可以使用 `args` 参数，例如：
-          # args: --bundles "apk"
