@@ -7,11 +7,12 @@ on:
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+*'
 
+permissions:
+  contents: write
+
 jobs:
   create-release:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     outputs:
       release_id: ${{ steps.create_release.outputs.id }}
     steps:
@@ -28,8 +29,6 @@ jobs:
 
   build-tauri:
     needs: create-release
-    permissions:
-      contents: write
     strategy:
       fail-fast: false
       matrix:
