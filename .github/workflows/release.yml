@@ -13,7 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       release_id: ${{ steps.create_release.outputs.id }}
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
       - name: Create Release
         id: create_release
@@ -134,7 +133,7 @@ jobs:
 
       - name: Build Android app
         if: matrix.os == 'linux'
-        run: pnpm tauri android build
+        run: pnpm tauri android build --apk
         env:
           TAURI_KEY_PATH: ${{ runner.temp }}/release.keystore
           TAURI_KEY_PASSWORD: ${{ secrets.ANDROID_SIGNING_KEY_PASSWORD }}
@@ -143,11 +142,13 @@ jobs:
         if: matrix.os == 'linux'
         run: ls -R src-tauri/gen/android/app/build/outputs/
 
-      - name: Upload Android App Bundle (AAB) to Release
+      - name: Upload Android Artifacts to Release
         if: matrix.os == 'linux'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # AAB 文件是主要的、已签名的发布产物，我们只需要上传它。
-          # 这里的路径已经根据 `ls -R` 的输出结果修正。
-          gh release upload ${{ github.ref_name }} src-tauri/gen/android/app/build/outputs/bundle/universalRelease/*.aab
+          # 根据 ls -R 的输出，使用精确的路径上传这两个文件。
+          # 注意：下面这个 APK 文件是未签名的。
+          gh release upload ${{ github.ref_name }} \
+            src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk \
+            src-tauri/gen/android/app/build/outputs/bundle/universalRelease/*.aab
