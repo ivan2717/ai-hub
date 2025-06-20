@@ -121,4 +121,4 @@ jobs:
           TAURI_KEY_PASSWORD: ${{ secrets.ANDROID_SIGNING_KEY_PASSWORD }}
         with:
           releaseId: ${{ needs.create-release.outputs.release_id }}
-          target: ${{ matrix.os == 'linux' && 'android' || '' }}
+          args: ${{ matrix.os == 'linux' && '--target android' || '' }}
