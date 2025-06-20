@@ -33,18 +33,57 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # 只为 macOS 和 Windows 打包
-        platform: [macos-latest, windows-latest]
+        # 为 macOS, Windows 和 Android 打包
+        platform: [macos-latest, windows-latest, ubuntu-latest]
+        # 在矩阵中为 Android 构建定义一个特殊标识
+        include:
+          - platform: ubuntu-latest
+            os: linux # 自定义一个标识，方便后面判断
+          - platform: macos-latest
+            os: macos
+          - platform: windows-latest
+            os: windows
 
     runs-on: ${{ matrix.platform }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # (为 Ubuntu 安装依赖的步骤已删除)
+      # --- Android 特定的设置步骤 ---
+      - name: Set up Java and Android SDK
+        if: matrix.os == 'linux' # 只在 Android 构建时运行
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17' # Android 开发常用的 JDK 版本
+      
+      - name: Install Android NDK
+        if: matrix.os == 'linux'
+        run: |
+          echo "y" | sudo apt-get update
+          echo "y" | sudo apt-get install -y android-sdk
+          echo "y" | sudo sdkmanager "ndk;25.2.9519653" "build-tools;34.0.0" "platforms;android-34"
+          echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
+          echo "NDK_HOME=$ANDROID_HOME/ndk/25.2.9519653" >> $GITHUB_ENV
 
+      - name: Decode and place Android signing key
+        if: matrix.os == 'linux'
+        # 从 GitHub Secrets 中解码 Keystore 文件
+        run: |
+          echo "${{ secrets.ANDROID_SIGNING_KEY }}" | base64 --decode > ${{ runner.temp }}/release.keystore
+        env:
+          # TAURI_KEY_PATH 和 TAURI_KEY_PASSWORD 是 tauri-action 会自动使用的环境变量
+          TAURI_KEY_PATH: ${{ runner.temp }}/release.keystore
+          TAURI_KEY_PASSWORD: ${{ secrets.ANDROID_SIGNING_KEY_PASSWORD }}
+
+      # --- 通用的 Rust 和 Node 设置步骤 ---
       - name: Rust setup
         uses: dtolnay/rust-toolchain@stable
+      
+      # 为 Android 交叉编译添加 Rust target
+      - name: Install Rust target for Android
+        if: matrix.os == 'linux'
+        run: rustup target add aarch64-linux-android armv7-linux-androideabi
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
@@ -65,9 +104,16 @@ jobs:
       - name: Install frontend dependencies
         run: pnpm install
 
+      # --- 构建步骤 ---
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # 签名密钥的环境变量会自动被 tauri-action 使用
+          TAURI_KEY_PATH: ${{ env.TAURI_KEY_PATH }}
+          TAURI_KEY_PASSWORD: ${{ env.TAURI_KEY_PASSWORD }}
         with:
           releaseId: ${{ needs.create-release.outputs.release_id }}
+          # Android 构建默认生成 APK 和 AAB
+          # 如果只想生成一种，可以使用 `args` 参数，例如：
+          # args: --bundles "apk"
