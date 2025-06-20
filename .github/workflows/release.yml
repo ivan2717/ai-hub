@@ -1,5 +1,3 @@
-# .github/workflows/release.yml
-
 name: Release
 
 on:
@@ -150,15 +148,22 @@ jobs:
           TAURI_KEY_PATH: ${{ runner.temp }}/release.keystore
           TAURI_KEY_PASSWORD: ${{ secrets.ANDROID_SIGNING_KEY_PASSWORD }}
 
-      - name: Upload Android APK
+      # =====================================================
+      # UPLOAD STEP (CORRECTED)
+      # =====================================================
+      - name: List build artifacts (for debugging)
+        if: matrix.os == 'linux'
+        run: ls -R src-tauri/gen/android/app/build/outputs/
+
+      - name: Upload Android APKs
         if: matrix.os == 'linux'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: src-tauri/gen/android/app/build/outputs/apk/release/app-release.apk
-          asset_name: app-${{ github.ref_name }}.apk
+          # 使用通配符 (*) 匹配所有生成的 release APK 文件
+          asset_path: src-tauri/gen/android/app/build/outputs/apk/release/*.apk
           asset_content_type: application/vnd.android.package-archive
 
       - name: Upload Android AAB
@@ -168,6 +173,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: src-tauri/gen/android/app/build/outputs/bundle/release/app-release.aab
-          asset_name: app-${{ github.ref_name }}.aab
+          # 使用通配符 (*) 匹配生成的 AAB 文件
+          asset_path: src-tauri/gen/android/app/build/outputs/bundle/release/*.aab
           asset_content_type: application/octet-stream
