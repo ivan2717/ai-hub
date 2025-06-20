@@ -24,6 +24,17 @@ android {
         versionCode = tauriProperties.getProperty("tauri.android.versionCode", "1").toInt()
         versionName = tauriProperties.getProperty("tauri.android.versionName", "1.0")
     }
+
+    signingConfigs {
+        create("release") {
+            // 从 GitHub Actions 的环境变量中读取密钥信息
+            storeFile = file(System.getenv("TAURI_KEY_PATH"))
+            storePassword = System.getenv("TAURI_KEY_PASSWORD")
+            keyAlias = System.getenv("TAURI_KEY_ALIAS") // 你的密钥别名
+            keyPassword = System.getenv("TAURI_KEY_PASSWORD") // 通常与 keystore 密码相同
+        }
+    }
+
     buildTypes {
         getByName("debug") {
             manifestPlaceholders["usesCleartextTraffic"] = "true"
@@ -43,6 +54,8 @@ android {
                     .plus(getDefaultProguardFile("proguard-android-optimize.txt"))
                     .toList().toTypedArray()
             )
+            // 关键！将上面定义的签名配置应用到 release 构建中
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     kotlinOptions {
