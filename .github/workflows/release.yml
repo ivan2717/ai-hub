@@ -33,9 +33,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # 为 macOS, Windows 和 Android 打包
         platform: [macos-latest, windows-latest, ubuntu-latest]
-        # 在矩阵中为每个平台定义一个特殊标识，方便条件判断
         include:
           - platform: ubuntu-latest
             os: linux # 用于 Android 构建
@@ -48,6 +46,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Install Linux (Android build) system dependencies
+        if: matrix.os == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pkg-config libssl-dev libglib2.0-dev
 
       # =====================================================
       # ANDROID-SPECIFIC SETUP (runs only on ubuntu-latest)
@@ -62,11 +66,9 @@ jobs:
       - name: Setup Android SDK
         if: matrix.os == 'linux'
         uses: android-actions/setup-android@v3
-        # 这个 Action 会自动下载命令行工具并设置 ANDROID_HOME
 
       - name: Install NDK and other components with sdkmanager
         if: matrix.os == 'linux'
-        # 注意：这里不再需要 sudo
         run: |
           echo "y" | sdkmanager "ndk;25.2.9519653" "build-tools;34.0.0" "platforms;android-34"
       
@@ -78,7 +80,6 @@ jobs:
         if: matrix.os == 'linux'
         run: |
           echo "${{ secrets.ANDROID_SIGNING_KEY }}" | base64 --decode > ${{ runner.temp }}/release.keystore
-        # 设置环境变量，供 tauri-action 使用
         env:
           TAURI_KEY_PATH: ${{ runner.temp }}/release.keystore
           TAURI_KEY_PASSWORD: ${{ secrets.ANDROID_SIGNING_KEY_PASSWORD }}
@@ -119,7 +120,6 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # 签名密钥的环境变量会自动被 tauri-action 使用
           TAURI_KEY_PATH: ${{ env.TAURI_KEY_PATH }}
           TAURI_KEY_PASSWORD: ${{ env.TAURI_KEY_PASSWORD }}
         with:
