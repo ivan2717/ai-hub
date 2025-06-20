@@ -80,9 +80,6 @@ jobs:
         if: matrix.os == 'linux'
         run: |
           echo "${{ secrets.ANDROID_SIGNING_KEY }}" | base64 --decode > ${{ runner.temp }}/release.keystore
-        env:
-          TAURI_KEY_PATH: ${{ runner.temp }}/release.keystore
-          TAURI_KEY_PASSWORD: ${{ secrets.ANDROID_SIGNING_KEY_PASSWORD }}
 
       # =====================================================
       # COMMON SETUP for Rust, Node, and Frontend
@@ -120,7 +117,8 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAURI_KEY_PATH: ${{ env.TAURI_KEY_PATH }}
-          TAURI_KEY_PASSWORD: ${{ env.TAURI_KEY_PASSWORD }}
+          TAURI_KEY_PATH: ${{ matrix.os == 'linux' && format('{0}/release.keystore', runner.temp) || '' }}
+          TAURI_KEY_PASSWORD: ${{ secrets.ANDROID_SIGNING_KEY_PASSWORD }}
         with:
           releaseId: ${{ needs.create-release.outputs.release_id }}
+          target: ${{ matrix.os == 'linux' && 'android' || '' }}
