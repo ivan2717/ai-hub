@@ -12,12 +12,12 @@ pub fn run() {
         // 使用 setup 钩子，在窗口创建后执行代码
         .setup(|app| {
             // 通过 label 获取主窗口
-            let window = app.get_webview_window("main").unwrap();
+            let _window = app.get_webview_window("main").unwrap();
 
             // 在非移动端平台上设置全屏
             #[cfg(not(mobile))]
             {
-                window
+                _window
                     .set_fullscreen(true)
                     .expect("Failed to set window to fullscreen");
             }
@@ -25,12 +25,12 @@ pub fn run() {
             Ok(())
         })
         // （可选但强烈推荐）添加事件监听来处理意外情况
-        .on_window_event(|window, event| match event {
+        .on_window_event(|_window, event| match event {
             // 如果用户试图通过系统快捷键退出全屏
             #[cfg(not(mobile))]
             WindowEvent::Resized(..) => {
                 // 立即强制其返回全屏状态
-                let _ = window.set_fullscreen(true);
+                let _ = _window.set_fullscreen(true);
             }
             // 阻止通过 Alt+F4 或 Cmd+Q 关闭
             WindowEvent::CloseRequested { api, .. } => {
@@ -39,7 +39,7 @@ pub fn run() {
             // 确保窗口始终在最前和获取焦点 (Kiosk模式加强)
             #[cfg(not(mobile))]
             WindowEvent::Focused(false) => {
-                let _ = window.set_focus();
+                let _ = _window.set_focus();
             }
             _ => {}
         })
