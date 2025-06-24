@@ -17,7 +17,7 @@ function Home() {
   return (
     <div style={{ width: "100vw", height: "100vh", margin: 0, padding: 0, overflow: 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '40px', background: '#f0f2f5' }}>
       <div
-        onClick={() => handleClick("http://101.35.252.91:9092")}
+        onClick={() => handleClick("https://p2p.parflowai.com/")}
         style={{
           display: 'flex',
           flexDirection: 'column',
@@ -40,7 +40,7 @@ function Home() {
         <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#333' }}>AI 3D</span>
       </div>
       <div
-        onClick={() => handleClick("http://101.35.252.91:9091")}
+        onClick={() => handleClick("https://ai-3d.parflowai.com")}
         style={{
           display: 'flex',
           flexDirection: 'column',
@@ -63,7 +63,7 @@ function Home() {
         <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#333' }}>AI 绘画</span>
       </div>
       <div
-        onClick={() => handleClick("http://101.35.252.91:9093")}
+        onClick={() => handleClick("https://career.parflowai.com")}
         style={{
           display: 'flex',
           flexDirection: 'column',
