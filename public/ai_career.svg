@@ -1,0 +1,183 @@
+<svg width="240" height="240" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+  <!-- 定义渐变和滤镜 -->
+  <defs>
+    <!-- 时光环渐变 -->
+    <linearGradient id="timeRingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:1">
+        <animate attributeName="stop-color" values="#00d4ff;#7c3aed;#ff6b35;#00d4ff" dur="4s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="50%" style="stop-color:#7c3aed;stop-opacity:1">
+        <animate attributeName="stop-color" values="#7c3aed;#ff6b35;#00d4ff;#7c3aed" dur="4s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" style="stop-color:#ff6b35;stop-opacity:1">
+        <animate attributeName="stop-color" values="#ff6b35;#00d4ff;#7c3aed;#ff6b35" dur="4s" repeatCount="indefinite"/>
+      </stop>
+    </linearGradient>
+    
+    <!-- AI核心渐变 -->
+    <radialGradient id="aiCoreGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#764ba2;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#667eea;stop-opacity:1"/>
+    </radialGradient>
+    
+    <!-- 文字渐变 -->
+    <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:1"/>
+      <stop offset="50%" style="stop-color:#7c3aed;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#ff6b35;stop-opacity:1"/>
+    </linearGradient>
+    
+    <!-- 发光滤镜 -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- 神经网络路径 -->
+    <path id="neuralPath1" d="M -30,-15 Q 0,0 30,15" stroke="none" fill="none"/>
+    <path id="neuralPath2" d="M -25,-20 Q 5,-5 25,20" stroke="none" fill="none"/>
+    <path id="neuralPath3" d="M -20,25 Q 0,5 20,-25" stroke="none" fill="none"/>
+  </defs>
+  
+  <!-- 暗色圆形背景 -->
+  <circle cx="120" cy="120" r="120" fill="#0f0f23"/>
+  
+  <!-- Logo主体容器 -->
+  <g transform="translate(120,120)">
+    
+    <!-- 轨道粒子 -->
+    <g class="orbit-particles">
+      <!-- 粒子1 -->
+      <circle r="3" fill="#00d4ff" filter="url(#glow)">
+        <animateTransform 
+          attributeName="transform" 
+          type="rotate" 
+          values="0;360" 
+          dur="3s" 
+          repeatCount="indefinite"/>
+        <animateMotion dur="3s" repeatCount="indefinite">
+          <mpath href="#orbit1"/>
+        </animateMotion>
+      </circle>
+      
+      <!-- 粒子2 -->
+      <circle r="2.5" fill="#7c3aed" filter="url(#glow)">
+        <animateTransform 
+          attributeName="transform" 
+          type="rotate" 
+          values="360;0" 
+          dur="2.5s" 
+          repeatCount="indefinite"/>
+        <animateMotion dur="2.5s" repeatCount="indefinite">
+          <mpath href="#orbit2"/>
+        </animateMotion>
+      </circle>
+      
+      <!-- 粒子3 -->
+      <circle r="2" fill="#ff6b35" filter="url(#glow)">
+        <animateTransform 
+          attributeName="transform" 
+          type="rotate" 
+          values="0;360" 
+          dur="4s" 
+          repeatCount="indefinite"/>
+        <animateMotion dur="4s" repeatCount="indefinite">
+          <mpath href="#orbit3"/>
+        </animateMotion>
+      </circle>
+    </g>
+    
+    <!-- 轨道路径（隐藏） -->
+    <path id="orbit1" d="M 0,-85 A 85,85 0 1,1 0,85 A 85,85 0 1,1 0,-85" fill="none" stroke="none"/>
+    <path id="orbit2" d="M 0,-65 A 65,65 0 1,1 0,65 A 65,65 0 1,1 0,-65" fill="none" stroke="none"/>
+    <path id="orbit3" d="M 0,-105 A 105,105 0 1,1 0,105 A 105,105 0 1,1 0,-105" fill="none" stroke="none"/>
+    
+    <!-- 时光环 -->
+    <circle r="85" fill="none" stroke="url(#timeRingGradient)" stroke-width="4" opacity="0.8">
+      <animate attributeName="stroke-dasharray" values="0,535;267,268;535,0" dur="2s" repeatCount="indefinite"/>
+      <animateTransform 
+        attributeName="transform" 
+        type="rotate" 
+        values="0;360" 
+        dur="8s" 
+        repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- AI核心圆圈 -->
+    <circle r="55" fill="url(#aiCoreGradient)" filter="url(#glow)">
+      <animate attributeName="r" values="55;58;55" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- 神经网络线条 -->
+    <g class="neural-network" stroke="#00d4ff" stroke-width="2" fill="none" opacity="0.7">
+      <!-- 神经线1 -->
+      <line x1="-25" y1="-15" x2="25" y2="15">
+        <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite"/>
+        <animate attributeName="stroke" values="#00d4ff;#ffffff;#00d4ff" dur="2s" repeatCount="indefinite"/>
+      </line>
+      
+      <!-- 神经线2 -->
+      <line x1="-20" y1="20" x2="20" y2="-20">
+        <animate attributeName="opacity" values="0;1;0" dur="2s" begin="0.7s" repeatCount="indefinite"/>
+        <animate attributeName="stroke" values="#7c3aed;#ffffff;#7c3aed" dur="2s" begin="0.7s" repeatCount="indefinite"/>
+      </line>
+      
+      <!-- 神经线3 -->
+      <line x1="-30" y1="0" x2="30" y2="0">
+        <animate attributeName="opacity" values="0;1;0" dur="2s" begin="1.3s" repeatCount="indefinite"/>
+        <animate attributeName="stroke" values="#ff6b35;#ffffff;#ff6b35" dur="2s" begin="1.3s" repeatCount="indefinite"/>
+      </line>
+      
+      <!-- 神经线4 -->
+      <line x1="0" y1="-25" x2="0" y2="25">
+        <animate attributeName="opacity" values="0;1;0" dur="2s" begin="1.7s" repeatCount="indefinite"/>
+        <animate attributeName="stroke" values="#00d4ff;#ffffff;#00d4ff" dur="2s" begin="1.7s" repeatCount="indefinite"/>
+      </line>
+    </g>
+    
+    <!-- 时钟指针 -->
+    <g class="clock-hands" stroke="#ffffff" stroke-width="2" stroke-linecap="round">
+      <!-- 时针 -->
+      <line x1="0" y1="0" x2="0" y2="-18">
+        <animateTransform 
+          attributeName="transform" 
+          type="rotate" 
+          values="0;360" 
+          dur="8s" 
+          repeatCount="indefinite"/>
+      </line>
+      
+      <!-- 分针 -->
+      <line x1="0" y1="0" x2="0" y2="-25">
+        <animateTransform 
+          attributeName="transform" 
+          type="rotate" 
+          values="0;360" 
+          dur="2s" 
+          repeatCount="indefinite"/>
+      </line>
+      
+      <!-- 中心点 -->
+      <circle r="2" fill="#ffffff"/>
+    </g>
+    
+    <!-- 数据点 -->
+    <g class="data-points">
+      <circle cx="35" cy="0" r="1.5" fill="#00d4ff">
+        <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="-35" cy="0" r="1.5" fill="#7c3aed">
+        <animate attributeName="opacity" values="0;1;0" dur="1.5s" begin="0.5s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="0" cy="35" r="1.5" fill="#ff6b35">
+        <animate attributeName="opacity" values="0;1;0" dur="1.5s" begin="1s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="0" cy="-35" r="1.5" fill="#00d4ff">
+        <animate attributeName="opacity" values="0;1;0" dur="1.5s" begin="1.5s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+  </g>
+</svg>
