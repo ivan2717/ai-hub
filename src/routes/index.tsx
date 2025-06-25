@@ -7,12 +7,12 @@ const services = [
   {
     title: 'AI 3D',
     imageUrl: '/ai_3d.svg',
-    targetUrl: 'https://p2p.parflowai.com/',
+    targetUrl: 'https://ai-3d.parflowai.com/',
   },
   {
     title: 'AI 绘画',
     imageUrl: '/ai_paiting.svg',
-    targetUrl: 'https://ai-3d.parflowai.com',
+    targetUrl: 'https://p2p.parflowai.com',
   },
   {
     title: '职业时光机',
